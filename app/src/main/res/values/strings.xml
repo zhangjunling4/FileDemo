@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FileDemo</string>
+    <string name="up_file">上传文件</string>
+    <string name="down_file">下载文件</string>
+
+    <string name="file_list">文件列表</string>
+
+</resources>
