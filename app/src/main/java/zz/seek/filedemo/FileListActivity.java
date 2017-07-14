@@ -1,10 +1,12 @@
 package zz.seek.filedemo;
 
 import android.content.Context;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +16,15 @@ import android.widget.Toast;
 
 import com.squareup.okhttp.Request;
 import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.FileCallBack;
 
+import java.io.File;
 import java.util.List;
 
 import zz.seek.filedemo.callback.FileListCallBack;
 
 public class FileListActivity extends AppCompatActivity {
+    private final static String TAG = FileListActivity.class.getSimpleName();
 
     //学生下载文档接口    POST partner_id (教师id)
     private final static String DownFile = "http://fangtang.jzphp.com/m/molie/app_student/docList.php?";
@@ -76,7 +81,7 @@ public class FileListActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(final FileHolder holder, int position) {
+        public void onBindViewHolder(final FileHolder holder, final int position) {
 
             holder.fileName.setText(fileListData.get(position).getName());
             holder.fileDownload.setOnClickListener(new View.OnClickListener() {
@@ -85,8 +90,40 @@ public class FileListActivity extends AppCompatActivity {
                     Toast.makeText(mContext, getResources().getString(R.string.down_file), Toast.LENGTH_SHORT).show();
                     holder.fileDownProcess.setVisibility(View.VISIBLE);
 
+                    String name = fileListData.get(position).getDoc_url().substring(fileListData.get(position).getDoc_url().indexOf(".") + 1, fileListData.get(position).getDoc_url().length());
+
+                    name = fileListData.get(position).getName() + name;
+                    downFileFormIntenet(holder.fileDownProcess, holder.fileDownload,  fileListData.get(position).getDoc_url(), name);
                 }
             });
+        }
+
+        private void downFileFormIntenet(final ProgressBar fileDownProcess, final TextView fileDownload,
+                                         String docUrl, String name) {
+            Log.i(TAG, "name=" + Environment.getExternalStorageDirectory().getAbsolutePath());
+
+            OkHttpUtils.get().url(docUrl).build()
+                    .execute(new FileCallBack(Environment.getExternalStorageDirectory().getAbsolutePath(), name) {
+                @Override
+                public void inProgress(float progress) {
+                    Log.i(TAG, "path=" + Environment.getExternalStorageDirectory().getAbsolutePath());
+
+                    fileDownload.setText("正在下载中..."+Math.round(progress * 100)+"%");
+                    fileDownProcess.setProgress((int)(progress * 100));
+                }
+
+                @Override
+                public void onError(Request request, Exception e) {
+
+                }
+
+                @Override
+                public void onResponse(File response) {
+
+                }
+            });
+
+
         }
 
         @Override
