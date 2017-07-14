@@ -90,9 +90,12 @@ public class FileListActivity extends AppCompatActivity {
                     Toast.makeText(mContext, getResources().getString(R.string.down_file), Toast.LENGTH_SHORT).show();
                     holder.fileDownProcess.setVisibility(View.VISIBLE);
 
-                    String name = fileListData.get(position).getDoc_url().substring(fileListData.get(position).getDoc_url().indexOf(".") + 1, fileListData.get(position).getDoc_url().length());
+                    String name = fileListData.get(position).getDoc_url().substring(fileListData.get(position).getDoc_url().length() - 4, fileListData.get(position).getDoc_url().length());
+                    Log.i(TAG, "name=" + name);
 
                     name = fileListData.get(position).getName() + name;
+                    Log.i(TAG, "name=" + name);
+
                     downFileFormIntenet(holder.fileDownProcess, holder.fileDownload,  fileListData.get(position).getDoc_url(), name);
                 }
             });
@@ -100,7 +103,6 @@ public class FileListActivity extends AppCompatActivity {
 
         private void downFileFormIntenet(final ProgressBar fileDownProcess, final TextView fileDownload,
                                          String docUrl, String name) {
-            Log.i(TAG, "name=" + Environment.getExternalStorageDirectory().getAbsolutePath());
 
             OkHttpUtils.get().url(docUrl).build()
                     .execute(new FileCallBack(Environment.getExternalStorageDirectory().getAbsolutePath(), name) {
@@ -119,6 +121,9 @@ public class FileListActivity extends AppCompatActivity {
 
                 @Override
                 public void onResponse(File response) {
+                    Toast.makeText(mContext, response.getName()+"下载成功", Toast.LENGTH_SHORT).show();
+                    fileDownload.setText("下载完毕");
+                    fileDownProcess.setVisibility(View.GONE);
 
                 }
             });

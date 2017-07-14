@@ -29,6 +29,7 @@
             android:layout_height="wrap_content"
             style="?android:attr/progressBarStyleHorizontal"
             android:max="100"
+            android:visibility="gone"
             />
 
         <TextView

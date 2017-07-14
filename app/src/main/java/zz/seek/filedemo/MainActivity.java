@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, getResources().getString(R.string.up_file), Toast.LENGTH_SHORT).show();
-
                 FileUtils.selectFileFromMobile(MainActivity.this);
             }
         });
@@ -106,14 +105,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(FileModel response) {
+                Toast.makeText(MainActivity.this, response.getResult(), Toast.LENGTH_SHORT).show();
 
                 upFile.setText("上传完毕");
-                Toast.makeText(MainActivity.this, response.getResult(), Toast.LENGTH_SHORT).show();
+                progressBarUp.setVisibility(View.GONE);
             }
 
             @Override
             public void inProgress(float progress) {
                 super.inProgress(progress);
+
+                progressBarUp.setVisibility(View.VISIBLE);
                 Log.i(TAG, "progress=" + progress);
                 upFile.setText("正在上传中..."+Math.round(progress * 100)+"%");
                 progressBarUp.setProgress((int)(progress * 100));
